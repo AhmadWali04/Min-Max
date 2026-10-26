@@ -1,0 +1,38 @@
+{
+  "scenarioId": "client-restart",
+  "description": "Healthy baseline, then telemetry stops arriving entirely for two windows (as if the client process restarted, per PRD Journey C), then resumes at the same healthy rate.",
+  "targetsAcceptanceCase": "insufficient-data, false-positive",
+  "config": {
+    "baselineWindowSeconds": 60,
+    "rollingWindowSeconds": 10,
+    "minSamplesPerWindow": 5,
+    "degradeInflationMs": 50,
+    "degradeSustainedWindows": 3,
+    "recoverInflationMs": 25,
+    "recoverSustainedWindows": 2,
+    "cooldownSeconds": 20
+  },
+  "timeline": [
+    { "atSeconds": 0, "kind": "rttSamples", "valuesMs": [18, 19, 21, 20, 22] },
+    { "atSeconds": 10, "kind": "rttSamples", "valuesMs": [19, 20, 18, 21, 20] },
+    { "atSeconds": 20, "kind": "rttSamples", "valuesMs": [20, 21, 19, 20, 19] },
+    { "atSeconds": 30, "kind": "rttSamples", "valuesMs": [18, 20, 21, 19, 20] },
+    { "atSeconds": 40, "kind": "rttSamples", "valuesMs": [21, 19, 20, 18, 21] },
+    { "atSeconds": 50, "kind": "rttSamples", "valuesMs": [19, 20, 20, 21, 19], "note": "baseline complete after this window" },
+
+    { "atSeconds": 60, "kind": "sessionGap", "valuesMs": [], "note": "client process killed mid-send, per PRD Journey C step 1; zero samples arrive for this window" },
+    { "atSeconds": 70, "kind": "sessionGap", "valuesMs": [], "note": "client still restarting/re-registering; second consecutive empty window" },
+
+    { "atSeconds": 80, "kind": "rttSamples", "valuesMs": [19, 21, 20, 18, 22], "note": "client reconnected with a fresh session identity per Journey C step 2; telemetry resumes at the same healthy rate" },
+    { "atSeconds": 90, "kind": "rttSamples", "valuesMs": [20, 19, 21, 20, 18] },
+    { "atSeconds": 100, "kind": "rttSamples", "valuesMs": [19, 20, 20, 21, 19] }
+  ],
+  "expectedStates": [
+    { "atSeconds": 0, "state": "unknown", "reason": "baseline window still filling" },
+    { "atSeconds": 60, "state": "healthy", "reason": "baseline complete, no inflation" },
+    { "atSeconds": 70, "state": "unknown", "reason": "window 60-70s had zero samples (< minSamplesPerWindow): insufficient data, not evidence of congestion" },
+    { "atSeconds": 80, "state": "unknown", "reason": "window 70-80s also empty; still insufficient data" },
+    { "atSeconds": 90, "state": "healthy", "reason": "telemetry resumed in 80-90s with a healthy, sufficient-sample window; the baseline formed before the gap is still within baselineWindowSeconds (60s old) and is reused rather than re-formed from zero" }
+  ],
+  "notes": "This fixture encodes a deliberate ASSUMPTION flagged in Docs/detector-test-scenarios.md: that recovery from a session gap reuses the still-recent pre-gap baseline rather than requiring a full fresh baselineWindowSeconds of new data, and that a single sufficient-sample window is enough to confirm 'healthy' after a gap (lighter-weight than the degrade/recover hysteresis counters, since this transition is about data sufficiency, not inflation hysteresis). PP-005 should treat this as a design question to confirm, not as a settled contract — if the chosen design instead re-forms the baseline from scratch after any gap, update the expectedStates at t=90 accordingly and say so in the detector's own documentation. Either way, the gap itself must produce unknown, never degraded: a missing client is not evidence of congestion."
+}
