@@ -1,15 +1,12 @@
 # Local planning documents (existing repository convention).
-AGENTS.md
-ARCHITECTURE.md
-PRD.md
-TASKS.md
-
-# SwiftPM, Xcode, and local measurements.
 .build/
 .swiftpm/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
 DerivedData/
 *.xcuserstate
 xcuserdata/
-Results/
 .DS_Store
+Results/
+*.log
 .worktrees/
