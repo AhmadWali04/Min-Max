@@ -1,4 +1,4 @@
-# PingPilot — Implementation Task Board
+# MinMax — Implementation Task Board
 
 **Version:** 0.1  
 **Source of truth:** [PRD.md](PRD.md) and [ARCHITECTURE.md](ARCHITECTURE.md)  
@@ -20,7 +20,7 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 ### [ ] PP-001 — Bootstrap Swift package and repository
 - **Suggested owner:** Codex
 - **Depends on:** none
-- **Scope:** `Package.swift`, minimal `Sources/PingPilotCore`, `Sources/PingPilotGameClient`, `Sources/PingPilotEchoServer`, matching test target, `.gitignore`, README setup.
+- **Scope:** `Package.swift`, minimal `Sources/MinMaxCore`, `Sources/MinMaxGameClient`, `Sources/MinMaxEchoServer`, matching test target, `.gitignore`, README setup.
 - **Acceptance:** `swift build` and `swift test` pass on macOS; two minimal executables launch; generated Results/build artifacts ignored.
 - **Evidence:** build/test logs; repository tree; recorded Swift/Xcode versions.
 - **Parallel:** Claude may independently review project structure, without editing shared files.
@@ -77,7 +77,7 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 ### [ ] PP-008 — CLI status and explanation commands
 - **Suggested owner:** Claude or Codex (dedicated worktree)
 - **Depends on:** PP-006 stable snapshot contract
-- **Scope:** `pingpilot status`, `clients`, `explain`, useful failure messages.
+- **Scope:** `MinMax status`, `clients`, `explain`, useful failure messages.
 - **Acceptance:** queries real agent; clear output when agent unavailable; no direct access to daemon memory.
 - **Evidence:** CLI transcript and smoke test.
 - **Parallel:** Safe with PP-007 only if snapshot contract is frozen and file ownership is separate.
@@ -88,7 +88,7 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 - **Suggested owner:** Codex
 - **Depends on:** PP-006, PP-007
 - **Scope:** per-user LaunchAgent, install/uninstall scripts, graceful termination, client exponential backoff and re-registration.
-- **Acceptance:** real macOS agent starts/stops; kill/restart daemon and client; no stale duplicate sessions; uninstall leaves no PingPilot-owned agent artifacts.
+- **Acceptance:** real macOS agent starts/stops; kill/restart daemon and client; no stale duplicate sessions; uninstall leaves no MinMax-owned agent artifacts.
 - **Evidence:** lifecycle script and OSLog/CLI transcript.
 
 ### [ ] PP-010 — Controlled uploader and upload server
@@ -141,7 +141,7 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 ## Stretch backlog — Not part of MVP
 
 ### [ ] PP-016 — Incident flight recorder and replay
-Bounded incident history and `pingpilot replay <id>` timeline; redact sensitive data and document retention.
+Bounded incident history and `MinMax replay <id>` timeline; redact sensitive data and document retention.
 
 ### [ ] PP-017 — Objective-C interoperability client
 Separate Objective-C XPC client communicating with the Swift agent; prove protocol compatibility and document bridging.

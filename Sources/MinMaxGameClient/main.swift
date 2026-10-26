@@ -1,15 +1,10 @@
+import Darwin
 import Foundation
-import MinMaxCore
+import MinMaxUDP
 
-@main
-struct MinMaxGameClient {
-    static func main() {
-        if CommandLine.arguments.dropFirst().contains("--help") {
-            print("MinMaxGameClient \(MinMaxCore.version)")
-            print("Placeholder game client; network probing is not implemented yet.")
-            return
-        }
-
-        print("MinMaxGameClient \(MinMaxCore.version) is ready.")
-    }
+do {
+    try WorkloadCLI.runProbe(arguments: Array(CommandLine.arguments.dropFirst()))
+} catch {
+    FileHandle.standardError.write(Data("MinMaxGameClient: \(error)\n".utf8))
+    exit(1)
 }

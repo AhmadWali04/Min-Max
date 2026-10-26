@@ -25,17 +25,25 @@ let package = Package(
         .target(
             name: "MinMaxCore"
         ),
-        .executableTarget(
-            name: "MinMaxGameClient",
+        .target(
+            name: "MinMaxUDP",
             dependencies: ["MinMaxCore"]
         ),
         .executableTarget(
+            name: "MinMaxGameClient",
+            dependencies: ["MinMaxCore", "MinMaxUDP"]
+        ),
+        .executableTarget(
             name: "MinMaxEchoServer",
-            dependencies: ["MinMaxCore"]
+            dependencies: ["MinMaxCore", "MinMaxUDP"]
         ),
         .testTarget(
             name: "MinMaxCoreTests",
             dependencies: ["MinMaxCore"]
+        ),
+        .testTarget(
+            name: "MinMaxUDPTests",
+            dependencies: ["MinMaxUDP", "MinMaxCore"]
         )
     ]
 )
