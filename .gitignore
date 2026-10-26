@@ -1,4 +1,5 @@
 # Local planning documents (existing repository convention).
+Progress.MD
 .build/
 .swiftpm/
 *.xcodeproj/xcuserdata/
