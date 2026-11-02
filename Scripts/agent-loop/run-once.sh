@@ -46,6 +46,11 @@ cd "$WORKTREE_DIR"
 git fetch origin --quiet
 git checkout -q main
 git reset -q --hard origin/main
+# Detach immediately: this worktree must not sit on 'main' once this
+# script exits (e.g. the "no eligible ticket" early exit below), or the
+# other agent's worktree will fail its own `git checkout main` next
+# cycle with "'main' is already used by worktree at ...".
+git checkout -q --detach
 
 TICKETS_JSON="$WORKTREE_DIR/Scripts/agent-loop/tickets.json"
 

@@ -65,6 +65,7 @@ write_plist() {
   <key>Label</key><string>$label</string>
   <key>ProgramArguments</key>
   <array>
+    <string>/bin/bash</string>
     <string>$SCRIPT_DIR/run-once.sh</string>
     <string>$agent</string>
     <string>$worktree</string>
