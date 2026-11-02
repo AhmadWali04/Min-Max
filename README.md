@@ -12,8 +12,9 @@ The project is being built as an **Objective-C/Swift macOS system**. Swift owns
 the modern application, concurrency, measurement, and policy logic. Objective-C
 interoperability is part of the planned XPC boundary so that clients can use a
 stable Objective-C-compatible transport contract when needed. The current
-bootstrap is intentionally Swift-only; the production XPC client/server
-boundary will be added after the platform feasibility work is complete.
+iteration provides a controlled UDP echo server and probe client with RTT and
+timeout accounting; the production XPC client/server boundary will be added
+after the platform feasibility work is complete.
 
 ## What the project is exploring
 
@@ -116,33 +117,55 @@ From the repository root:
 swift --version
 swift build
 swift test
+python3 Scripts/test-udp-loopback.py
 ```
 
 The package currently provides:
 
-- `MinMaxCore`, the Foundation-only shared library
-- `MinMaxGameClient`, a minimal executable placeholder
-- `MinMaxEchoServer`, a minimal executable placeholder
+- `MinMaxCore`, the socket-free packet and probe-tracking library
+- `MinMaxUDP`, a macOS POSIX socket adapter used by the workload executables
+- `MinMaxGameClient`, a paced UDP probe client
+- `MinMaxEchoServer`, a controlled UDP echo endpoint
 
-Run the placeholders and their help output with:
+Run their help output with:
 
 ```sh
 swift run MinMaxGameClient --help
 swift run MinMaxEchoServer --help
 ```
 
-## Current implementation status
+## Local probe
 
-The repository currently contains the initial Swift package and launchable
-placeholders:
+Build first, then start the server in one terminal:
 
-- `MinMaxCore`, the Foundation-only shared library
-- `MinMaxGameClient`, the future UDP game-probe executable
-- `MinMaxEchoServer`, the future controlled UDP echo endpoint
+```sh
+.build/debug/MinMaxEchoServer --host 127.0.0.1 --port 9999 --duration-seconds 60
+```
 
-UDP probing, XPC, metrics, and persistent services are deliberately staged for
-later tickets. The screenshots describe the product direction; they do not
-represent features that are already implemented in this bootstrap.
+In a second terminal:
+
+```sh
+.build/debug/MinMaxGameClient --host 127.0.0.1 --port 9999 --count 20 --interval-ms 50 --timeout-ms 1000
+```
+
+The client prints one RTT line per successful probe and a final JSON object
+with sent, received, timed-out, cancelled, duplicate, late, unmatched and
+malformed counts. A successful loopback exchange should have `received`
+equal to `sent`; timing and loss depend on scheduling and local conditions.
+SIGINT (Ctrl-C) or SIGTERM stops either process cleanly. The server also
+stops after its configured duration. Port `0` asks the server to choose and
+print an ephemeral port.
+
+The server binds only loopback by default. Numeric IPv4 addresses are supported;
+DNS names and IPv6 are deferred. Use other addresses only for endpoints you
+control or have permission to test. No service installation, privileges, or
+entitlements are required. These foreground tools use synchronous, bounded
+polling outside actors; do not embed their run loops in an actor.
+
+See [the UDP protocol and measurement limits](Docs/udp-protocol.md) and
+[agent coordination](Docs/coordination.md). Percentiles, jitter and rolling
+metrics are PP-003; daemon/XPC and upload mitigation come in later tickets.
+Loopback results do not establish congestion mitigation or router behavior.
 
 ## Project principles
 

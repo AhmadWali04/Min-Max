@@ -1,4 +1,4 @@
-# PingPilot — Implementation Task Board
+# MinMax — Implementation Task Board
 
 **Version:** 0.1  
 **Source of truth:** [PRD.md](PRD.md) and [ARCHITECTURE.md](ARCHITECTURE.md)  
@@ -25,12 +25,12 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 - **Evidence:** Verified on `main` 2026-11-02: `swift test` → `Executed 1 test, with 0 failures`. Three targets present (`MinMaxCore`, `MinMaxGameClient`, `MinMaxEchoServer`) plus `MinMaxCoreTests`. Marked complete while setting up the autonomous loop; see `Scripts/agent-loop/tickets.json`.
 - **Parallel:** Claude may independently review project structure, without editing shared files.
 
-### [ ] PP-002 — UDP echo protocol and loopback probe
+### [x] PP-002 — UDP echo protocol and loopback probe
 - **Suggested owner:** Codex
 - **Depends on:** PP-001
 - **Scope:** versioned probe message, sequence ID, matching reply, configurable cadence, timeout, clean socket shutdown.
 - **Acceptance:** controlled localhost test measures RTT; late/duplicate replies handled; server exits cleanly; tests cover packet encoding/decoding and timeout behavior.
-- **Evidence:** test output and example CLI invocation.
+- **Evidence:** Merged to `main` as `d22bde7` (PR #3) 2026-11-02 and human-approved. Verified on `main` at that commit: `swift build` ok; `swift test` → 15/15 (`MinMaxCoreTests`/`ProbeTests` + `MinMaxUDPTests`); `python3 Scripts/test-udp-loopback.py` → 6/6, including a regression test for the closed-port `ECONNREFUSED` case flagged by Claude's independent review (`Docs/reviews/PP-002-review.md`) and fixed by Codex before merge (`Docs/handoffs/PP-002-review-fixes.md`).
 
 ### [ ] PP-003 — Core metrics and deterministic time abstractions
 - **Suggested owner:** Codex
@@ -77,7 +77,7 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 ### [ ] PP-008 — CLI status and explanation commands
 - **Suggested owner:** Claude or Codex (dedicated worktree)
 - **Depends on:** PP-006 stable snapshot contract
-- **Scope:** `pingpilot status`, `clients`, `explain`, useful failure messages.
+- **Scope:** `MinMax status`, `clients`, `explain`, useful failure messages.
 - **Acceptance:** queries real agent; clear output when agent unavailable; no direct access to daemon memory.
 - **Evidence:** CLI transcript and smoke test.
 - **Parallel:** Safe with PP-007 only if snapshot contract is frozen and file ownership is separate.
@@ -88,7 +88,7 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 - **Suggested owner:** Codex
 - **Depends on:** PP-006, PP-007
 - **Scope:** per-user LaunchAgent, install/uninstall scripts, graceful termination, client exponential backoff and re-registration.
-- **Acceptance:** real macOS agent starts/stops; kill/restart daemon and client; no stale duplicate sessions; uninstall leaves no PingPilot-owned agent artifacts.
+- **Acceptance:** real macOS agent starts/stops; kill/restart daemon and client; no stale duplicate sessions; uninstall leaves no MinMax-owned agent artifacts.
 - **Evidence:** lifecycle script and OSLog/CLI transcript.
 
 ### [ ] PP-010 — Controlled uploader and upload server
@@ -141,7 +141,7 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 ## Stretch backlog — Not part of MVP
 
 ### [ ] PP-016 — Incident flight recorder and replay
-Bounded incident history and `pingpilot replay <id>` timeline; redact sensitive data and document retention.
+Bounded incident history and `MinMax replay <id>` timeline; redact sensitive data and document retention.
 
 ### [ ] PP-017 — Objective-C interoperability client
 Separate Objective-C XPC client communicating with the Swift agent; prove protocol compatibility and document bridging.
