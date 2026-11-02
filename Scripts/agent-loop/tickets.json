@@ -1,0 +1,141 @@
+{
+  "_comment": "Machine-readable mirror of TASKS.md for Scripts/agent-loop/*. TASKS.md stays the human-readable source of truth; this file is regenerated/edited alongside it by the loop. Do not let an agent edit this file for a ticket it is not currently claiming.",
+  "_reserved_files_comment": "Files no automated ticket may ever touch; any diff touching these forces human_gate regardless of the ticket's own flag. TASKS.md and tickets.json are handled separately below since every ticket legitimately edits its OWN status line in both -- gate.py checks that edit is scoped to just that ticket's entry, not a reserved file in the blanket sense.",
+  "reserved_files": [
+    "Package.swift",
+    "AGENTS.md",
+    "ARCHITECTURE.md",
+    "PRD.md"
+  ],
+  "scoped_status_files": ["TASKS.md", "Scripts/agent-loop/tickets.json"],
+  "tickets": {
+    "PP-001": {
+      "title": "Bootstrap Swift package and repository",
+      "owner": "codex",
+      "depends_on": [],
+      "branch": "codex/PP-001-bootstrap",
+      "status": "done",
+      "human_gate": false,
+      "notes": "Verified on main: swift build and swift test pass (1 test). Marked done by the human-directed setup pass on 2026-11-02."
+    },
+    "PP-002": {
+      "title": "UDP echo protocol and loopback probe",
+      "owner": "codex",
+      "depends_on": ["PP-001"],
+      "branch": "codex/PP-002-udp-probe",
+      "status": "branch_exists",
+      "human_gate": false,
+      "notes": "Implementation already present on codex/PP-002-udp-probe (unmerged). Loop should resume this branch, run the gate, open/update the PR, and merge if green and in-scope."
+    },
+    "PP-003": {
+      "title": "Core metrics and deterministic time abstractions",
+      "owner": "codex",
+      "depends_on": ["PP-001"],
+      "coordinate_with": ["PP-002"],
+      "branch": "codex/PP-003-metrics",
+      "status": "pending",
+      "human_gate": false
+    },
+    "PP-004": {
+      "title": "XPC feasibility and deployment ADR",
+      "owner": "claude",
+      "depends_on": ["PP-001"],
+      "branch": "claude/PP-004-xpc",
+      "status": "blocked",
+      "human_gate": true,
+      "notes": "ADR-0001 status is Proposed, not Accepted: spike shows AMFI (Code=-423) rejects adhoc-signed binaries launched via launchd trampoline. Blocked on a code-signing identity. Needs explicit human decision before PP-006/PP-009 build on it."
+    },
+    "PP-005": {
+      "title": "Congestion detector and policy state machine",
+      "owner": "codex",
+      "depends_on": ["PP-003"],
+      "branch": "codex/PP-005-detector",
+      "status": "pending",
+      "human_gate": false
+    },
+    "PP-006": {
+      "title": "Versioned XPC contract and independent clients",
+      "owner": "codex",
+      "depends_on": ["PP-004", "PP-003"],
+      "branch": "codex/PP-006-xpc-contract",
+      "status": "pending",
+      "human_gate": true,
+      "notes": "TASKS.md explicit gate: contract changes require human approval before parallel client implementation. Also blocked transitively on PP-004's open signing question."
+    },
+    "PP-007": {
+      "title": "Actor-isolated bounded telemetry store",
+      "owner": "codex",
+      "depends_on": ["PP-003", "PP-006"],
+      "branch": "codex/PP-007-telemetry-store",
+      "status": "pending",
+      "human_gate": false
+    },
+    "PP-008": {
+      "title": "CLI status and explanation commands",
+      "owner": "claude",
+      "depends_on": ["PP-006"],
+      "branch": "claude/PP-008-cli",
+      "status": "pending",
+      "human_gate": false
+    },
+    "PP-009": {
+      "title": "launchd lifecycle and reconnect behavior",
+      "owner": "codex",
+      "depends_on": ["PP-006", "PP-007"],
+      "branch": "codex/PP-009-launchd",
+      "status": "pending",
+      "human_gate": true,
+      "notes": "Installs a real per-user LaunchAgent and depends on the still-open PP-004 signing question."
+    },
+    "PP-010": {
+      "title": "Controlled uploader and upload server",
+      "owner": "codex",
+      "depends_on": ["PP-001"],
+      "coordinate_with": ["PP-006"],
+      "branch": "codex/PP-010-uploader",
+      "status": "pending",
+      "human_gate": false
+    },
+    "PP-011": {
+      "title": "Path observation and additional evidence",
+      "owner": "claude",
+      "depends_on": ["PP-006"],
+      "branch": "claude/PP-011-path-observer",
+      "status": "pending",
+      "human_gate": false
+    },
+    "PP-012": {
+      "title": "Opt-in policy control and uploader acknowledgement",
+      "owner": "codex",
+      "depends_on": ["PP-005", "PP-007", "PP-010"],
+      "branch": "codex/PP-012-policy-control",
+      "status": "pending",
+      "human_gate": false
+    },
+    "PP-013": {
+      "title": "Controlled congestion scenario and benchmark harness",
+      "owner": "codex",
+      "depends_on": ["PP-002", "PP-010", "PP-012"],
+      "branch": "codex/PP-013-benchmark",
+      "status": "pending",
+      "human_gate": false
+    },
+    "PP-014": {
+      "title": "Failure injection and resilience audit",
+      "owner": "claude",
+      "depends_on": ["PP-009", "PP-012"],
+      "branch": "claude/PP-014-failure-injection",
+      "status": "pending",
+      "human_gate": false
+    },
+    "PP-015": {
+      "title": "Final demo, docs, and interview package",
+      "owner": "claude",
+      "depends_on": ["PP-013", "PP-014"],
+      "branch": "claude/PP-015-final-package",
+      "status": "pending",
+      "human_gate": true,
+      "notes": "Final release/demo package always requires human sign-off regardless of CI state."
+    }
+  }
+}

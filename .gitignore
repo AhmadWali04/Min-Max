@@ -11,3 +11,4 @@ xcuserdata/
 Results/
 *.log
 .worktrees/
+__pycache__/
