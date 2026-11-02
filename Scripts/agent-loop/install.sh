@@ -37,11 +37,16 @@ cd "$REPO_ROOT"
 git fetch origin --quiet
 for pair in "codex:$CODEX_WORKTREE" "claude:$CLAUDE_WORKTREE"; do
   dir="${pair#*:}"
-  if [[ -d "$dir/.git" ]]; then
+  if [[ -e "$dir/.git" ]]; then
     echo "  $dir already exists, leaving it."
   else
     echo "  creating $dir"
-    git worktree add "$dir" main
+    # Detached, not attached to local branch 'main': run-once.sh's own
+    # `git checkout main` would otherwise collide with any other worktree
+    # (including this repo's own root checkout) that already holds that
+    # branch, since git allows a branch to be checked out in only one
+    # worktree at a time.
+    git worktree add --detach "$dir" main
   fi
 done
 
@@ -49,7 +54,9 @@ echo "== Installing LaunchAgents (interval: 1200s / 20min) =="
 SCRIPT_DIR="$REPO_ROOT/Scripts/agent-loop"
 
 write_plist() {
-  local agent="$1" worktree="$2" label="com.minmax.agentloop.$agent" plist="$PLIST_DIR/$label.plist"
+  local agent="$1" worktree="$2"
+  local label="com.minmax.agentloop.$agent"
+  local plist="$PLIST_DIR/$label.plist"
   cat > "$plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

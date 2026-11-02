@@ -20,7 +20,7 @@ if [[ "$AGENT" != "codex" && "$AGENT" != "claude" ]]; then
   echo "AGENT must be 'codex' or 'claude', got '$AGENT'" >&2
   exit 2
 fi
-if [[ ! -d "$WORKTREE_DIR/.git" ]]; then
+if [[ ! -e "$WORKTREE_DIR/.git" ]]; then
   echo "$WORKTREE_DIR is not a git worktree. Run install.sh first." >&2
   exit 2
 fi
