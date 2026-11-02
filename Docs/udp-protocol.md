@@ -63,8 +63,12 @@ use controlled networks/endpoints. No launchd registration, filesystem output,
 privileges, signing entitlement, or global network changes are introduced.
 IPv4 literals only are supported initially. CLI inputs have finite numeric
 bounds; count is at most 100,000 and timeout at most 60 seconds. Errors exit
-nonzero on stderr. Socket errors, including an unreachable endpoint reported
-by the OS, terminate the run instead of being silently relabelled as loss.
+nonzero on stderr for configuration and fatal socket errors. Transient
+receive errors (including ICMP refusal/unreachable) leave probes pending until
+their timeout. Transient sends are counted as `sendFailures` and do not abort
+the workload. `sent` counts issued attempts, including failed sends; their
+timeouts therefore measure application attempt failure, not proven network
+packet loss. The server counts failed replies separately and continues.
 
 Sockets have one foreground-thread owner and are closed on errors, completion,
 duration expiry and SIGINT/SIGTERM. A dispatch signal handler updates only an

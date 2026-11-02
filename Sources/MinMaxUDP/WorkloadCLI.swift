@@ -78,16 +78,21 @@ public enum WorkloadCLI {
         fflush(stdout)
         var echoed = 0
         var rejected = 0
+        var sendFailures = 0
         while !signals.flag.isStopped && DispatchTime.now().uptimeNanoseconds - start < UInt64(duration) * 1_000_000_000 {
             guard try socket.waitReadable(milliseconds: 50), let datagram = try socket.receive() else { continue }
             guard let packet = try? ProbePacket(decoding: datagram.data), packet.kind == .request else {
                 rejected += 1
                 continue
             }
-            try socket.reply(packet.reply.encoded(), to: datagram)
-            echoed += 1
+            do {
+                try socket.reply(packet.reply.encoded(), to: datagram)
+                echoed += 1
+            } catch let error as UDPError where error.isTransient {
+                sendFailures += 1
+            }
         }
-        print("stopped echoed=\(echoed) rejected=\(rejected)")
+        print("stopped echoed=\(echoed) rejected=\(rejected) sendFailures=\(sendFailures)")
     }
 
     public static func runProbe(arguments: [String]) throws {
@@ -109,12 +114,18 @@ public enum WorkloadCLI {
         var tracker = try ProbeTracker(runID: UInt64.random(in: .min ... .max), timeoutNanoseconds: timeout)
         var nextSend = DispatchTime.now().uptimeNanoseconds
         var duplicates = 0, late = 0, unmatched = 0, malformed = 0
+        var sendFailures = 0
         while !signals.flag.isStopped && (tracker.sent < count || tracker.inFlight > 0) {
             let now = DispatchTime.now().uptimeNanoseconds
             tracker.expire(now: now)
             if tracker.sent < count && now >= nextSend && tracker.inFlight < tracker.maxInFlight {
                 let packet = try tracker.issue(sequence: UInt64(tracker.sent), now: now)
-                try socket.send(packet.encoded())
+                do {
+                    try socket.send(packet.encoded())
+                } catch let error as UDPError where error.isTransient {
+                    // Issued attempts remain pending until their declared timeout.
+                    sendFailures += 1
+                }
                 // No catch-up burst after scheduler delays or capacity stalls.
                 nextSend = DispatchTime.now().uptimeNanoseconds + interval
             }
@@ -135,7 +146,7 @@ public enum WorkloadCLI {
         let completed = tracker.received + tracker.timedOut
         let summary = Summary(sent: tracker.sent, received: tracker.received, timedOut: tracker.timedOut,
                               cancelled: tracker.inFlight, duplicates: duplicates, late: late,
-                              unmatched: unmatched, malformed: malformed,
+                              unmatched: unmatched, malformed: malformed, sendFailures: sendFailures,
                               timeoutMilliseconds: timeout / 1_000_000,
                               lossPercent: completed > 0 ? Double(tracker.timedOut) / Double(completed) * 100 : nil)
         let encoder = JSONEncoder()
@@ -145,7 +156,7 @@ public enum WorkloadCLI {
 
     private struct Summary: Encodable {
         let sent: Int, received: Int, timedOut: Int, cancelled: Int
-        let duplicates: Int, late: Int, unmatched: Int, malformed: Int
+        let duplicates: Int, late: Int, unmatched: Int, malformed: Int, sendFailures: Int
         let timeoutMilliseconds: UInt64
         let lossPercent: Double?
     }

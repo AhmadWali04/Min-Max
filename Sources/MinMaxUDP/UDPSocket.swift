@@ -4,8 +4,15 @@ import MinMaxCore
 
 public struct UDPError: Error, CustomStringConvertible {
     public let description: String
-    init(_ operation: String) { description = "\(operation): \(String(cString: strerror(errno)))" }
-    init(message: String) { description = message }
+    public let code: Int32
+    public var isTransient: Bool {
+        [EAGAIN, EWOULDBLOCK, EINTR, ENOBUFS, ECONNREFUSED, ENETUNREACH, EHOSTUNREACH].contains(code)
+    }
+    init(_ operation: String) {
+        code = errno
+        description = "\(operation): \(String(cString: strerror(code)))"
+    }
+    init(message: String) { description = message; code = 0 }
 }
 
 public struct UDPDatagram {
@@ -126,8 +133,9 @@ public final class UDPSocket {
             }
         }
         if count < 0 {
-            if errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR { return nil }
-            throw UDPError("recvfrom")
+            let error = UDPError("recvfrom")
+            if error.isTransient { return nil }
+            throw error
         }
         return UDPDatagram(data: Data(buffer.prefix(count)), peer: peer)
     }

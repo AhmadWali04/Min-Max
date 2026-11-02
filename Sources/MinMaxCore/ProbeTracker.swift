@@ -1,6 +1,7 @@
 /// Pure, single-owner state with injected monotonic nanoseconds. Storage is
 /// bounded by maxInFlight plus twice that many recent completion identities.
 public struct ProbeTracker: Sendable {
+    /// Duplicate means a repeat of a successful reply; repeats after timeout stay late.
     public enum ReplyResult: Equatable, Sendable {
         case received(milliseconds: Double), duplicate, late, unmatched
     }

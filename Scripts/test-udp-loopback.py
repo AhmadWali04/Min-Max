@@ -80,6 +80,18 @@ class LoopbackProcesses(unittest.TestCase):
         self.assertEqual(summary["cancelled"], 0)
         self.assertEqual(summary["lossPercent"], 100)
 
+    def test_closed_endpoint_counts_timeout_loss(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as endpoint:
+            endpoint.bind(("127.0.0.1", 0))
+            port = endpoint.getsockname()[1]
+        _, summary = self.run_client(
+            "--port", port, "--count", 3, "--interval-ms", 20, "--timeout-ms", 200
+        )
+        self.assertEqual(summary["sent"], 3)
+        self.assertEqual(summary["received"], 0)
+        self.assertEqual(summary["timedOut"], 3)
+        self.assertEqual(summary["lossPercent"], 100)
+
     def test_sigint_counts_pending_as_cancelled(self):
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as silent:
             silent.bind(("127.0.0.1", 0))
