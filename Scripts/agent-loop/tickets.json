@@ -23,9 +23,9 @@
       "owner": "codex",
       "depends_on": ["PP-001"],
       "branch": "codex/PP-002-udp-probe",
-      "status": "branch_exists",
+      "status": "done",
       "human_gate": false,
-      "notes": "Implementation already present on codex/PP-002-udp-probe (unmerged). Loop should resume this branch, run the gate, open/update the PR, and merge if green and in-scope."
+      "notes": "Merged to main as d22bde7 (PR #3) 2026-11-02, human-approved. Touched Package.swift (new MinMaxUDP/MinMaxUDPTests targets) so gate.py correctly required a human merge rather than loop self-merge. swift build/test (15/15) and Scripts/test-udp-loopback.py (6/6) reverified on main at that commit."
     },
     "PP-003": {
       "title": "Core metrics and deterministic time abstractions",
