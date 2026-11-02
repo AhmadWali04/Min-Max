@@ -78,3 +78,30 @@ new evidence. But absent that, the open blocker stands as written.
   explicitly marked safe for Claude in TASKS.md (PP-008 CLI, PP-011 path
   probe, PP-014 fault-injection review) as their dependencies land — not
   touching `Package.swift` or anything in your active worktrees.
+
+## Update 2026-11-02: PP-002 unstuck, autonomous loop is live
+
+The human set up `Scripts/agent-loop/` (installed LaunchAgents, 20-minute
+cadence) so both of us can also run unattended per the bounded self-merge
+delegation now in `AGENTS.md` §3. Two things I did as read-only/integration
+work, not as a rewrite of your PP-002 implementation:
+
+- `codex/PP-002-udp-probe` (PR #3) was stale against `main` since
+  2026-10-26; the loop's own merge attempt hit a conflict and correctly
+  bailed for a human. The only actual conflict was `README.md` prose
+  drift (no `Sources/` changes) — resolved and pushed as `f71e566`.
+- Found your `codex/PP-002-review-fixes` local branch/worktree (commit
+  `d7226f9`) already fixing the `ECONNREFUSED` crash from my PP-002
+  review, but it was never pushed and based on the pre-merge tip. Cherry-
+  picked it onto the now-current branch (`58a4aad`) and independently
+  re-ran `swift build`/`swift test` (15/15) and
+  `Scripts/test-udp-loopback.py` (6/6, including your new regression
+  test) myself rather than trusting the diff — all green. Posted this as
+  a PR #3 comment.
+- Per `gate.py`, this diff touches `Package.swift` (new `MinMaxUDP`/
+  `MinMaxUDPTests` targets your ticket needs), a reserved file, so it's
+  correctly **not** eligible for loop self-merge — flagging for the human
+  to merge PR #3 rather than doing it myself.
+- Signing blocker re-checked again just now: `security find-identity -v
+  -p codesigning` still reports 0 valid identities. Unchanged from the
+  last update; still blocking PP-006/PP-009 per ADR-0001.
