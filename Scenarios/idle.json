@@ -1,0 +1,33 @@
+{
+  "scenarioId": "idle",
+  "description": "Stable low-RTT stream from a cold start, no competing load, ever.",
+  "targetsAcceptanceCase": "insufficient-data",
+  "config": {
+    "baselineWindowSeconds": 60,
+    "rollingWindowSeconds": 10,
+    "minSamplesPerWindow": 5,
+    "degradeInflationMs": 50,
+    "degradeSustainedWindows": 3,
+    "recoverInflationMs": 25,
+    "recoverSustainedWindows": 2,
+    "cooldownSeconds": 20
+  },
+  "timeline": [
+    { "atSeconds": 0, "kind": "rttSamples", "valuesMs": [18, 19, 21, 20, 22] },
+    { "atSeconds": 10, "kind": "rttSamples", "valuesMs": [19, 20, 18, 21, 20] },
+    { "atSeconds": 20, "kind": "rttSamples", "valuesMs": [20, 21, 19, 20, 19] },
+    { "atSeconds": 30, "kind": "rttSamples", "valuesMs": [18, 20, 21, 19, 20] },
+    { "atSeconds": 40, "kind": "rttSamples", "valuesMs": [21, 19, 20, 18, 21] },
+    { "atSeconds": 50, "kind": "rttSamples", "valuesMs": [19, 20, 20, 21, 19] },
+    { "atSeconds": 60, "kind": "rttSamples", "valuesMs": [20, 19, 21, 20, 18] },
+    { "atSeconds": 70, "kind": "rttSamples", "valuesMs": [19, 21, 20, 19, 20] },
+    { "atSeconds": 80, "kind": "rttSamples", "valuesMs": [20, 20, 19, 21, 19] }
+  ],
+  "expectedStates": [
+    { "atSeconds": 0, "state": "unknown", "reason": "baseline window (60s) has not finished filling yet" },
+    { "atSeconds": 50, "state": "unknown", "reason": "still one window short of a complete baseline window" },
+    { "atSeconds": 60, "state": "healthy", "reason": "baseline complete (p50 ~= 20ms), no inflation evidence" },
+    { "atSeconds": 90, "state": "healthy", "reason": "stays healthy indefinitely with no load; never trips degraded" }
+  ],
+  "notes": "Pure control case. Proves the detector does not report healthy before a full baseline window exists, and does not drift into degraded on its own under constant, low-variance RTT. If an implementation reports anything other than unknown before 60s or anything other than healthy after it, that is a bug in baseline-window accounting, not a threshold-tuning issue."
+}

@@ -1,0 +1,32 @@
+{
+  "scenarioId": "short-spike",
+  "description": "A single rolling window spikes well past the degrade threshold, then immediately returns to baseline.",
+  "targetsAcceptanceCase": "false-positive",
+  "config": {
+    "baselineWindowSeconds": 60,
+    "rollingWindowSeconds": 10,
+    "minSamplesPerWindow": 5,
+    "degradeInflationMs": 50,
+    "degradeSustainedWindows": 3,
+    "recoverInflationMs": 25,
+    "recoverSustainedWindows": 2,
+    "cooldownSeconds": 20
+  },
+  "timeline": [
+    { "atSeconds": 0, "kind": "rttSamples", "valuesMs": [18, 19, 21, 20, 22] },
+    { "atSeconds": 10, "kind": "rttSamples", "valuesMs": [19, 20, 18, 21, 20] },
+    { "atSeconds": 20, "kind": "rttSamples", "valuesMs": [20, 21, 19, 20, 19] },
+    { "atSeconds": 30, "kind": "rttSamples", "valuesMs": [18, 20, 21, 19, 20] },
+    { "atSeconds": 40, "kind": "rttSamples", "valuesMs": [21, 19, 20, 18, 21] },
+    { "atSeconds": 50, "kind": "rttSamples", "valuesMs": [19, 20, 20, 21, 19] },
+    { "atSeconds": 60, "kind": "rttSamples", "valuesMs": [85, 90, 95, 88, 92], "note": "single-window spike: p95 ~= 94ms, inflation ~= 74ms, well past degradeInflationMs" },
+    { "atSeconds": 70, "kind": "rttSamples", "valuesMs": [19, 20, 21, 18, 20] },
+    { "atSeconds": 80, "kind": "rttSamples", "valuesMs": [20, 19, 20, 21, 19] }
+  ],
+  "expectedStates": [
+    { "atSeconds": 60, "state": "healthy", "reason": "baseline complete, no inflation yet" },
+    { "atSeconds": 70, "state": "healthy", "reason": "the 60-70s window alone exceeded degradeInflationMs, but degradeSustainedWindows requires 3 consecutive violating windows, not 1 — must NOT transition to degraded" },
+    { "atSeconds": 90, "state": "healthy", "reason": "fully recovered; the spike left no lingering state" }
+  ],
+  "notes": "This is the hysteresis/false-positive guard case named explicitly in TASKS.md PP-005's acceptance criteria. If an implementation reports degraded at any point in this timeline, degradeSustainedWindows is not being enforced as a consecutive-window counter (e.g. it may be using an any-window-in-history check, or a leaky/non-resetting counter)."
+}

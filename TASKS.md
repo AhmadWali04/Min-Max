@@ -2,7 +2,7 @@
 
 **Version:** 0.1  
 **Source of truth:** [PRD.md](PRD.md) and [ARCHITECTURE.md](ARCHITECTURE.md)  
-**Workflow:** One ticket per branch/worktree; Codex implements by default, Claude reviews/designs by default. Human owns integration.
+**Workflow:** One ticket per branch/worktree; Codex implements by default, Claude reviews/designs by default. Human owns integration, **except for tickets picked up by the autonomous loop in `Scripts/agent-loop/`, which merges its own PRs under the explicit, bounded delegation in `AGENTS.md` §3 ("Autonomous dual-agent loop").** `Scripts/agent-loop/tickets.json` is the machine-readable mirror of this file that the loop actually reads; keep both in sync.
 
 ## 0. Task state conventions
 
@@ -17,12 +17,12 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 
 ## Milestone 0 — Repository and feasibility (Week 1)
 
-### [ ] PP-001 — Bootstrap Swift package and repository
+### [x] PP-001 — Bootstrap Swift package and repository
 - **Suggested owner:** Codex
 - **Depends on:** none
 - **Scope:** `Package.swift`, minimal `Sources/MinMaxCore`, `Sources/MinMaxGameClient`, `Sources/MinMaxEchoServer`, matching test target, `.gitignore`, README setup.
 - **Acceptance:** `swift build` and `swift test` pass on macOS; two minimal executables launch; generated Results/build artifacts ignored.
-- **Evidence:** build/test logs; repository tree; recorded Swift/Xcode versions.
+- **Evidence:** Verified on `main` 2026-11-02: `swift test` → `Executed 1 test, with 0 failures`. Three targets present (`MinMaxCore`, `MinMaxGameClient`, `MinMaxEchoServer`) plus `MinMaxCoreTests`. Marked complete while setting up the autonomous loop; see `Scripts/agent-loop/tickets.json`.
 - **Parallel:** Claude may independently review project structure, without editing shared files.
 
 ### [ ] PP-002 — UDP echo protocol and loopback probe

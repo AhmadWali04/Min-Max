@@ -1,4 +1,5 @@
 # Local planning documents (existing repository convention).
+Progress.MD
 .build/
 .swiftpm/
 *.xcodeproj/xcuserdata/
@@ -10,3 +11,4 @@ xcuserdata/
 Results/
 *.log
 .worktrees/
+__pycache__/

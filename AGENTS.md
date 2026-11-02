@@ -40,7 +40,46 @@ Roles are conventions, not exclusive capabilities. Either agent may implement or
 - If another agent's changes are needed, request an interface agreement or wait for its branch to merge; do not guess the API.
 - Do not merge, rebase, cherry-pick, force-push, reset, or discard another agent's work without explicit human instruction.
 - Cross-review is read-only by default. Submit findings instead of rewriting the other agent's branch.
-- The human integrates branches serially and resolves conflicts.
+- The human integrates branches serially and resolves conflicts, **except under the Autonomous dual-agent loop below, where that integration authority is pre-delegated per the rules stated there.**
+
+### Autonomous dual-agent loop (opt-in; active since 2026-11-02)
+
+The human has explicitly instructed (per §2 precedence rule 1) that Codex
+and Claude Code may run continuously and unattended via
+`Scripts/agent-loop/`, each driving a dedicated worktree
+(`../MinMax-loop-codex`, `../MinMax-loop-claude`), claiming the next
+eligible ticket from `Scripts/agent-loop/tickets.json`, implementing it,
+running `swift build && swift test`, opening a PR, and **merging it to
+`main` themselves** when all of the following hold — this is the specific
+"explicit human instruction" the rule above requires, scoped exactly as
+follows and not beyond it:
+
+1. `swift build` and `swift test` both pass, plus any `Scripts/test-*` or
+   `Scripts/smoke-*` script the ticket's diff touches.
+2. The diff does not touch a reserved file (`Package.swift`, `AGENTS.md`,
+   `ARCHITECTURE.md`, `PRD.md`) and any edit to `TASKS.md` or
+   `Scripts/agent-loop/tickets.json` is scoped to that ticket's own entry.
+3. `tickets.json` does not flag the ticket `human_gate: true`. That flag
+   covers, at minimum: PP-006 (explicit contract-approval gate below),
+   anything that installs a LaunchAgent or depends on the still-open PP-004
+   code-signing blocker, and PP-015 (final release always needs a human).
+4. The branch merges cleanly (no conflicts, main hasn't moved since the
+   gate ran).
+
+If any of these fail, the agent still opens/updates the PR and labels it
+`needs-human-merge` instead of merging — that is the fallback to ordinary
+human-owned integration, not a second autonomy tier. `Scripts/agent-loop/gate.py`
+is the actual enforcement of points 2–3; read it rather than this summary
+when precision matters. This does **not** relax §9's Definition of Done
+for the project as a whole — PRD §11's macOS XPC/benchmark verification
+still requires real hardware and human judgment regardless of what merged
+automatically. A ticket this loop merges and marks `[x]` has met its
+written acceptance criteria with command-level evidence in the PR; it has
+not received the deeper platform verification §9 describes for XPC and
+benchmark tickets, which is exactly why those are on the `human_gate`
+list. The human can revoke this delegation at any time by stopping the
+LaunchAgents (`Scripts/agent-loop/install.sh` prints the exact commands)
+or by setting any ticket's `human_gate` to `true`.
 
 ### Handoff format
 

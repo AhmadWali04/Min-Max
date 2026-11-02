@@ -1,0 +1,84 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:MinMax}/.worktrees/PP-001",
+            "name": "Debug MinMaxGameClient (.worktrees/PP-001)",
+            "target": "MinMaxGameClient",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug MinMaxGameClient (.worktrees/PP-001)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:MinMax}/.worktrees/PP-001",
+            "name": "Release MinMaxGameClient (.worktrees/PP-001)",
+            "target": "MinMaxGameClient",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release MinMaxGameClient (.worktrees/PP-001)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:MinMax}/.worktrees/PP-001",
+            "name": "Debug MinMaxEchoServer (.worktrees/PP-001)",
+            "target": "MinMaxEchoServer",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug MinMaxEchoServer (.worktrees/PP-001)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:MinMax}/.worktrees/PP-001",
+            "name": "Release MinMaxEchoServer (.worktrees/PP-001)",
+            "target": "MinMaxEchoServer",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release MinMaxEchoServer (.worktrees/PP-001)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:MinMax}",
+            "name": "Debug MinMaxGameClient",
+            "target": "MinMaxGameClient",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug MinMaxGameClient"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:MinMax}",
+            "name": "Release MinMaxGameClient",
+            "target": "MinMaxGameClient",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release MinMaxGameClient"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:MinMax}",
+            "name": "Debug MinMaxEchoServer",
+            "target": "MinMaxEchoServer",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug MinMaxEchoServer"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:MinMax}",
+            "name": "Release MinMaxEchoServer",
+            "target": "MinMaxEchoServer",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release MinMaxEchoServer"
+        }
+    ]
+}
