@@ -1,15 +1,10 @@
+import Darwin
 import Foundation
-import MinMaxCore
+import MinMaxUDP
 
-@main
-struct MinMaxEchoServer {
-    static func main() {
-        if CommandLine.arguments.dropFirst().contains("--help") {
-            print("MinMaxEchoServer \(MinMaxCore.version)")
-            print("Placeholder echo server; UDP behavior is not implemented yet.")
-            return
-        }
-
-        print("MinMaxEchoServer \(MinMaxCore.version) is ready.")
-    }
+do {
+    try WorkloadCLI.runEcho(arguments: Array(CommandLine.arguments.dropFirst()))
+} catch {
+    FileHandle.standardError.write(Data("MinMaxEchoServer: \(error)\n".utf8))
+    exit(1)
 }
