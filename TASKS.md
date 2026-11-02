@@ -25,12 +25,12 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 - **Evidence:** Verified on `main` 2026-11-02: `swift test` → `Executed 1 test, with 0 failures`. Three targets present (`MinMaxCore`, `MinMaxGameClient`, `MinMaxEchoServer`) plus `MinMaxCoreTests`. Marked complete while setting up the autonomous loop; see `Scripts/agent-loop/tickets.json`.
 - **Parallel:** Claude may independently review project structure, without editing shared files.
 
-### [ ] PP-002 — UDP echo protocol and loopback probe
+### [x] PP-002 — UDP echo protocol and loopback probe
 - **Suggested owner:** Codex
 - **Depends on:** PP-001
 - **Scope:** versioned probe message, sequence ID, matching reply, configurable cadence, timeout, clean socket shutdown.
 - **Acceptance:** controlled localhost test measures RTT; late/duplicate replies handled; server exits cleanly; tests cover packet encoding/decoding and timeout behavior.
-- **Evidence:** test output and example CLI invocation.
+- **Evidence:** Merged to `main` as `d22bde7` (PR #3) 2026-11-02 and human-approved. Verified on `main` at that commit: `swift build` ok; `swift test` → 15/15 (`MinMaxCoreTests`/`ProbeTests` + `MinMaxUDPTests`); `python3 Scripts/test-udp-loopback.py` → 6/6, including a regression test for the closed-port `ECONNREFUSED` case flagged by Claude's independent review (`Docs/reviews/PP-002-review.md`) and fixed by Codex before merge (`Docs/handoffs/PP-002-review-fixes.md`).
 
 ### [ ] PP-003 — Core metrics and deterministic time abstractions
 - **Suggested owner:** Codex
