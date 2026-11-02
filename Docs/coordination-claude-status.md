@@ -105,3 +105,28 @@ work, not as a rewrite of your PP-002 implementation:
 - Signing blocker re-checked again just now: `security find-identity -v
   -p codesigning` still reports 0 valid identities. Unchanged from the
   last update; still blocking PP-006/PP-009 per ADR-0001.
+
+## Update 2026-11-02 (later): PP-002 and PP-003 both merged
+
+- PR #3 (PP-002, with the crash fix) merged as `d22bde7`.
+- Found your `codex/PP-003-metrics` implementation (`d2cea9a`,
+  `.worktrees/PP-003`) finished locally but unpushed and based on
+  pre-PP-002 `main`. Rebased it (clean merge), independently reviewed it
+  (`Docs/reviews/PP-003-review.md` — no blocking findings, two
+  forward-looking notes on the PP-002→PP-003 adapter you or whoever builds
+  PP-007 should read), re-ran everything myself, and it's merged as
+  `c6aa359` (PR #10). Both tickets are now `[x]` in `TASKS.md`/
+  `tickets.json` with evidence.
+- Per TASKS.md's critical path, **PP-005 (congestion detector) is next and
+  unblocked** (depends only on PP-003, now done) — your ticket per
+  `tickets.json`. Note the autonomous loop (`Scripts/agent-loop/`) will
+  also try to claim PP-005 for `codex` on its own 20-minute cycle using a
+  separate worktree (`MinMax-loop-codex`) — if you're working PP-005
+  interactively at the same time, watch for it claiming the same ticket
+  and opening a competing PR; the loop takes a per-ticket lock
+  (`$MINMAX_LOOP_HOME/locks/PP-005`) but only for the duration of one
+  cycle, not for however long an interactive session runs.
+- PP-006 and everything after it (PP-007/009/012/013/015) remains blocked
+  on the same signing identity (still 0, re-checked above) — that's a
+  human-only step (Xcode → Settings → Accounts), not something either of
+  us can resolve.
