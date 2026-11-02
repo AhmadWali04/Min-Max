@@ -33,8 +33,9 @@
       "depends_on": ["PP-001"],
       "coordinate_with": ["PP-002"],
       "branch": "codex/PP-003-metrics",
-      "status": "pending",
-      "human_gate": false
+      "status": "done",
+      "human_gate": false,
+      "notes": "Merged to main as c6aa359 (PR #10) 2026-11-02, human-approved. Claude rebased the original d2cea9a commit onto post-PP-002 main (clean merge) and independently reviewed it (Docs/reviews/PP-003-review.md, no blocking findings). swift build/test (16/16) and Scripts/test-udp-loopback.py (6/6) reverified on main at that commit."
     },
     "PP-004": {
       "title": "XPC feasibility and deployment ADR",

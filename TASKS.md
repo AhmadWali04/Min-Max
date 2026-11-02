@@ -32,12 +32,12 @@ Each ticket must have an owner, branch, acceptance evidence, and a PR/commit ref
 - **Acceptance:** controlled localhost test measures RTT; late/duplicate replies handled; server exits cleanly; tests cover packet encoding/decoding and timeout behavior.
 - **Evidence:** Merged to `main` as `d22bde7` (PR #3) 2026-11-02 and human-approved. Verified on `main` at that commit: `swift build` ok; `swift test` → 15/15 (`MinMaxCoreTests`/`ProbeTests` + `MinMaxUDPTests`); `python3 Scripts/test-udp-loopback.py` → 6/6, including a regression test for the closed-port `ECONNREFUSED` case flagged by Claude's independent review (`Docs/reviews/PP-002-review.md`) and fixed by Codex before merge (`Docs/handoffs/PP-002-review-fixes.md`).
 
-### [ ] PP-003 — Core metrics and deterministic time abstractions
+### [x] PP-003 — Core metrics and deterministic time abstractions
 - **Suggested owner:** Codex
 - **Depends on:** PP-001; coordinate probe data contract with PP-002
 - **Scope:** monotonic duration abstraction, RTT distribution, documented jitter, loss accounting, bounded rolling windows.
 - **Acceptance:** tests cover empty windows, outliers, p50/p95/p99, lost/late packets, expiration and max capacity.
-- **Evidence:** `swift test` output; metric definitions in `Docs/metrics.md`.
+- **Evidence:** Merged to `main` as `c6aa359` (PR #10) 2026-11-02 and human-approved. `RollingMetrics` (nearest-rank percentiles, completion-order mean-absolute jitter, timeout/late-reply loss accounting, bounded circular window with saturating capacity-eviction counter). Independently reviewed by Claude (`Docs/reviews/PP-003-review.md`, no blocking findings) and re-verified on `main` at that commit: `swift build` ok; `swift test` → 16/16; `python3 Scripts/test-udp-loopback.py` → 6/6. Formulas finalized in `Docs/metrics.md`.
 - **Parallel:** Can run alongside PP-004 once interfaces are agreed; avoid same-file edits.
 
 ### [ ] PP-004 — XPC feasibility and deployment ADR
